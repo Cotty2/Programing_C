@@ -1,0 +1,18 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**", // Включает все файлы в рабочей папке
+                "/usr/include", // Стандартные заголовочные файлы
+                "/usr/local/include" // Локальные заголовочные файлы
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc", // Путь к компилятору
+            "cStandard": "c11", // Стандарт языка C
+            "cppStandard": "c++17", // Стандарт языка C++ (если используется)
+            "intelliSenseMode": "gcc-x64" // Режим IntelliSense для GCC
+        }
+    ],
+    "version": 4
+}
