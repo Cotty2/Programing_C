@@ -5,11 +5,11 @@ int main() {
     int i = 0;
 
     printf("Vvedite stroku: ");
-    gets(str);
+    fgets(str, sizeof(str), stdin); 
 
     while (str[i] != '\0') {
         if (str[i] == 'a' || str[i] == 'b') {
-            str[i] = str[i] - 32;
+            str[i] = str[i] - 32; 
         }
         i++;
     }
@@ -17,4 +17,3 @@ int main() {
     printf("Resultat: %s\n", str);
     return 0;
 }
-
