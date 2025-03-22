@@ -1,8 +1,6 @@
 #include <stdio.h>
-
-// Объявление функций из triangle.c
-double perim(double a, double b, double c);
-double area(double a, double b, double c);
+#include <stdbool.h>
+#include "triangle.h"
 
 int main() {
     double a, b, c;
@@ -17,8 +15,8 @@ int main() {
     scanf("%lf", &c);
 
     // Проверка на треугольник
-    if (a + b > c && a + c > b && b + c > a) {
-        // Всё ок, считаем периметр и площадь
+    if (norm(a,b,c)) {
+        //  считаем периметр и площадь
         double p = perim(a, b, c);
         double s = area(a, b, c);
 
@@ -27,8 +25,10 @@ int main() {
         printf("Площадь: %lf\n", s);
     } else {
         // Если не треугольник
-        printf("Это не треугольник! Стороны неправильные!\n");
+        printf("Это не треугольник! \n");
     }
 
     return 0;
 }
+//gcc main.c triangle.c -o triangle -lm
+//./triangle
