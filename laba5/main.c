@@ -1,14 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double** summatrix(double **m1, double **m2, int N) {
-    double **temp;
-    int i, j;
 
-    temp = (double**)malloc(N * sizeof(double*));
+double** createmat(int N) {
+    double **matrix;
+    int i;
+
+    matrix = (double**)malloc(N * sizeof(double*));
     for (i = 0; i < N; i++) {
-        temp[i] = (double*)malloc(N * sizeof(double));
+        matrix[i] = (double*)malloc(N * sizeof(double));
     }
+    return matrix;
+}
+
+double** summatrix(double **m1, double **m2, int N) {
+    double **temp = createmat(N);
+    int i, j;
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
@@ -20,13 +27,8 @@ double** summatrix(double **m1, double **m2, int N) {
 }
 
 double** submatrix(double **m1, double **m2, int N) {  
-    double **temp;
+    double **temp = createmat(N);
     int i, j;
-
-    temp = (double**)malloc(N * sizeof(double*));
-    for (i = 0; i < N; i++) {
-        temp[i] = (double*)malloc(N * sizeof(double));
-    }
 
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
@@ -36,14 +38,17 @@ double** submatrix(double **m1, double **m2, int N) {
 
     return temp;
 }
+
 double** multmatrix(double **m1, double **m2, int N) {
-    double **temp;
+    double **temp = createmat(N);
     int i, j, k;
 
-    temp = (double**)malloc(N * sizeof(double*));
     for (i = 0; i < N; i++) {
-        temp[i] = (double*)malloc(N * sizeof(double));
+        for (j = 0; j < N; j++) {
+            temp[i][j] = 0;
+        }
     }
+
     for (i = 0; i < N; i++) {
         for (j = 0; j < N; j++) {
             for (k = 0; k < N; k++) {
@@ -54,23 +59,17 @@ double** multmatrix(double **m1, double **m2, int N) {
 
     return temp;
 }
+
 int main() {
     double **m1, **m2, **result;
     int N, i, j;
     char operation;
 
-    printf("vvedite matrisu (n): ");
+    printf("vvedite razmer matrisu (n): ");
     scanf("%d", &N);
 
-    m1 = (double**)malloc(N * sizeof(double*));
-    for (i = 0; i < N; i++) {
-        m1[i] = (double*)malloc(N * sizeof(double));
-    }
-
-    m2 = (double**)malloc(N * sizeof(double*));
-    for (i = 0; i < N; i++) {
-        m2[i] = (double*)malloc(N * sizeof(double));
-    }
+    m1 = createmat(N);
+    m2 = createmat(N);
 
     printf("vvedite 1 matrisu:\n");
     for (i = 0; i < N; i++) {
@@ -94,10 +93,10 @@ int main() {
     if (operation == '+') {
         result = summatrix(m1, m2, N);
     } 
-     else if (operation == '-') {  
+    else if (operation == '-') {  
         result = submatrix(m1, m2, N); 
     } 
-     else if (operation == '*') {  
+    else if (operation == '*') {  
         result = multmatrix(m1, m2, N);
     } else {
         printf("incorrect\n");
@@ -111,6 +110,7 @@ int main() {
         }
         printf("\n");
     }
+
 
     for (i = 0; i < N; i++) {
         free(m1[i]);
