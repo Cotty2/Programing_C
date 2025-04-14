@@ -2,62 +2,60 @@
 #include <stdlib.h>
 
 struct humen {
-    char name[50];      
+    char name[50];     
     char patronymic[50]; 
     char surname[50];   
-    int dr;             
+    int dr;            
 };
 
 int main() {
-    int n; 
-    printf("введите количество людей: ");
-    scanf("%d", &n);
-    struct humen *first_array = (struct humen *)malloc(n * sizeof(struct humen));
-    struct humen *second_array = (struct humen *)malloc(n * sizeof(struct humen));
-
-    if (first_array == NULL || second_array == NULL) {
-        printf("ошибка памяти\n");
-        return 1;
-    }
-
-
     FILE *file = fopen("people.txt", "r");
     if (file == NULL) {
-        printf("ошибка открытия \n");
-        free(first_array);
-        free(second_array);
+        printf("Ошибка открытия .\n");
         return 1;
     }
 
-    printf("чтение:\n");
-    for (int i = 0; i < n; i++) {
+    int count = 0;
+    char buffer[200];
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        if (buffer[0] != '\n') count++; 
+    }
+    rewind(file);
+
+    if (count == 0) {
+        printf("Файл пуст.\n");
+        fclose(file);
+        return 1;
+    }
+
+    struct humen *first_array = malloc(count * sizeof(struct humen));
+    struct humen *second_array = malloc(count * sizeof(struct humen));
+
+    printf("Чтение (%d человек):\n", count);
+    for (int i = 0; i < count; i++) {
         if (fscanf(file, "%s %s %s %d", 
-                   first_array[i].name, 
-                   first_array[i].patronymic, 
-                   first_array[i].surname, 
-                   &first_array[i].dr) != 4) {
-            printf("ошибка чтения\n");
+                first_array[i].name, 
+                first_array[i].patronymic, 
+                first_array[i].surname, 
+                &first_array[i].dr) != 4) {
+            printf("Ошибка %d\n", i+1);
             fclose(file);
             free(first_array);
             free(second_array);
             return 1;
         }
-        printf("Человек %d: %s %s %s, %d год\n", 
-               i+1, 
-               first_array[i].name, 
-               first_array[i].patronymic, 
-               first_array[i].surname, 
-               first_array[i].dr);
+        printf("%s %s %s, %d\n", 
+              first_array[i].name, 
+              first_array[i].patronymic, 
+              first_array[i].surname, 
+              first_array[i].dr);
     }
-
     fclose(file);
-
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < count; i++) {
         second_array[i] = first_array[i];
     }
-
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - i - 1; j++) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
             if (second_array[j].dr > second_array[j+1].dr) {
                 struct humen temp = second_array[j];
                 second_array[j] = second_array[j+1];
@@ -65,16 +63,14 @@ int main() {
             }
         }
     }
-
-    printf("\n отсортированный:\n");
-    for (int i = 0; i < n; i++) {
-        printf("%s %s %s, %d год\n", 
-               second_array[i].name, 
-               second_array[i].patronymic, 
-               second_array[i].surname, 
-               second_array[i].dr);
+    printf("\nотсортированный список:\n");
+    for (int i = 0; i < count; i++) {
+        printf("%s %s %s, %d\n", 
+              second_array[i].name, 
+              second_array[i].patronymic, 
+              second_array[i].surname, 
+              second_array[i].dr);
     }
-
     free(first_array);
     free(second_array);
 
