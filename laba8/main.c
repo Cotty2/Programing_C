@@ -10,22 +10,22 @@ typedef struct {
     int birthYear;
     char sex;
     float stature;
-} Individual;
+} Chelovek;
 
 int primarySortKey;
 int secondarySortKey;
 
-int loadDataFromFile(Individual **list, int *total) {
+int loadDataFromFile(Chelovek **list, int *total) {
     FILE *fp = fopen(DATA_FILE, "r");
 
     *list = NULL;
     *total = 0;
 
-    Individual buffer;
+    Chelovek buffer;
 
     while (fscanf(fp, "%s %d %c %f", buffer.fullName, &buffer.birthYear, &buffer.sex, &buffer.stature) == 4) {
         (*total)++;
-        *list = (Individual *)realloc(*list, (*total) * sizeof(Individual));
+        *list = (Chelovek *)realloc(*list, (*total) * sizeof(Chelovek));
         if (*list == NULL) {
             printf("Ошибка выделения памяти\n");
             fclose(fp);
@@ -41,50 +41,35 @@ int loadDataFromFile(Individual **list, int *total) {
     return 1;
 }
 
-int saveDataToFile(Individual *list, int total) {
-    FILE *fp = fopen(DATA_FILE, "w");
-    if (fp == NULL) {
-        printf("Не удалось открыть файл %s для записи\n", DATA_FILE);
-        return 0;
-    }
-
-    for (int i = 0; i < total; i++) {
-        fprintf(fp, "%s %d %c %f\n", list[i].fullName, list[i].birthYear, list[i].sex, list[i].stature);
-    }
-
-    fclose(fp);
-    return 1;
-}
-
 int cmpByYear(const void *x, const void *y) {
-    const Individual *a = (const Individual *)x;
-    const Individual *b = (const Individual *)y;
+    const Chelovek *a = (const Chelovek *)x;
+    const Chelovek *b = (const Chelovek *)y;
     return a->birthYear - b->birthYear;
 }
 
 int cmpByName(const void *x, const void *y) {
-    const Individual *a = (const Individual *)x;
-    const Individual *b = (const Individual *)y;
+    const Chelovek *a = (const Chelovek *)x;
+    const Chelovek *b = (const Chelovek *)y;
     return strcmp(a->fullName, b->fullName);
 }
 
 int cmpBySex(const void *x, const void *y) {
-    const Individual *a = (const Individual *)x;
-    const Individual *b = (const Individual *)y;
+    const Chelovek *a = (const Chelovek *)x;
+    const Chelovek *b = (const Chelovek *)y;
     return a->sex - b->sex;
 }
 
 int cmpByHeight(const void *x, const void *y) {
-    const Individual *a = (const Individual *)x;
-    const Individual *b = (const Individual *)y;
+    const Chelovek *a = (const Chelovek *)x;
+    const Chelovek *b = (const Chelovek *)y;
     if (a->stature < b->stature) return -1;
     if (a->stature > b->stature) return 1;
     return 0;
 }
 
 int multiFieldCompare(const void *x, const void *y) {
-    const Individual *a = (const Individual *)x;
-    const Individual *b = (const Individual *)y;
+    const Chelovek *a = (const Chelovek *)x;
+    const Chelovek *b = (const Chelovek *)y;
     int res = 0;
 
     switch (primarySortKey) {
@@ -108,50 +93,61 @@ int multiFieldCompare(const void *x, const void *y) {
     return res;
 }
 
-void displayList(Individual *list, int total) {
+void displayList(Chelovek *list, int total) {
+    printf("Список отсортированных данных:\n");
     for (int i = 0; i < total; i++) {
-        printf("Имя: %s, Год: %d, Пол: %c, Рост: %.2f\n",
+        printf("ФИО: %s, Год рождения: %d, Пол: %c, Рост(м): %.2f\n",
                list[i].fullName, list[i].birthYear, list[i].sex, list[i].stature);
     }
 }
 
 int main() {
-    Individual *persons = NULL;
+    Chelovek *Cheloveks = NULL;
     int count = 0;
 
-    if (!loadDataFromFile(&persons, &count)) {
+    if (!loadDataFromFile(&Cheloveks, &count)) {
         return 1;
     }
 
     if (count == 0) {
-        printf("В файле нет данных.\n");
+        printf("Файл пуст или не содержит данных.\n");
         return 0;
     }
 
-    printf("Выберите первое поле для сортировки (1: Год, 2: Имя, 3: Пол, 4: Рост): ");
+    printf("Выберите основное поле для сортировки:\n");
+    printf("1. Год рождения\n");
+    printf("2. ФИО\n");
+    printf("3. Пол\n");
+    printf("4. Рост\n");
+    printf("Введите номер поля: ");
     scanf("%d", &primarySortKey);
 
-    printf("Выберите второе поле (0 - нет, 1: Год, 2: Имя, 3: Пол, 4: Рост): ");
+    printf("Выберите второстепенное поле для сортировки (0 - нет):\n");
+    printf("1. Год рождения\n");
+    printf("2. ФИО\n");
+    printf("3. Пол\n");
+    printf("4. Рост\n");
+    printf("Введите номер поля: ");
     scanf("%d", &secondarySortKey);
 
     if (secondarySortKey == 0) {
         switch (primarySortKey) {
-            case 1: qsort(persons, count, sizeof(Individual), cmpByYear); break;
-            case 2: qsort(persons, count, sizeof(Individual), cmpByName); break;
-            case 3: qsort(persons, count, sizeof(Individual), cmpBySex); break;
-            case 4: qsort(persons, count, sizeof(Individual), cmpByHeight); break;
+            case 1: qsort(Cheloveks, count, sizeof(Chelovek), cmpByYear); break;
+            case 2: qsort(Cheloveks, count, sizeof(Chelovek), cmpByName); break;
+            case 3: qsort(Cheloveks, count, sizeof(Chelovek), cmpBySex); break;
+            case 4: qsort(Cheloveks, count, sizeof(Chelovek), cmpByHeight); break;
             default:
-                printf("Неверный выбор поля.\n");
-                free(persons);
+                printf("Недопустимый выбор поля.\n");
+                free(Cheloveks);
                 return 1;
         }
     } else {
-        qsort(persons, count, sizeof(Individual), multiFieldCompare);
+        qsort(Cheloveks, count, sizeof(Chelovek), multiFieldCompare);
     }
 
-    printf("\nОтсортированные данные:\n");
-    displayList(persons, count);
+    printf("\nРезультат сортировки:\n");
+    displayList(Cheloveks, count);
 
-    free(persons);
+    free(Cheloveks);
     return 0;
 }
