@@ -2,114 +2,115 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_STR_LEN 64
-#define DATA_FILE "people.txt"
+#define MAX_NAME_LENGTH 64
+#define DATA_FILENAME "people.txt"
 
 typedef struct {
-    char fullName[MAX_STR_LEN];
-    int birthYear;
-    char sex;
-    float stature;
-} Chelovek;
+    char name[MAX_NAME_LENGTH];
+    int yearOfBirth;
+    char gender;
+    float height;
+} Person;
 
-int primarySortKey;
-int secondarySortKey;
+int mainSortField;
+int secondarySortField;
 
-int loadDataFromFile(Chelovek **list, int *total) {
-    FILE *fp = fopen(DATA_FILE, "r");
-
-    *list = NULL;
-    *total = 0;
-
-    Chelovek buffer;
-
-    while (fscanf(fp, "%s %d %c %f", buffer.fullName, &buffer.birthYear, &buffer.sex, &buffer.stature) == 4) {
-        (*total)++;
-        *list = (Chelovek *)realloc(*list, (*total) * sizeof(Chelovek));
-        if (*list == NULL) {
-            printf("Ошибка выделения памяти\n");
-            fclose(fp);
-            return 0;
-        }
-        strcpy((*list)[*total - 1].fullName, buffer.fullName);
-        (*list)[*total - 1].birthYear = buffer.birthYear;
-        (*list)[*total - 1].sex = buffer.sex;
-        (*list)[*total - 1].stature = buffer.stature;
+int loadPersonsFromFile(Person **personsArray, int *numPersons) {
+    FILE *file = fopen(DATA_FILENAME, "r");
+    if (!file) {
+        printf("Не удалось открыть файл %s\n", DATA_FILENAME);
+        return 0;
     }
 
-    fclose(fp);
+    *personsArray = NULL;
+    *numPersons = 0;
+
+    Person tempPerson;
+
+    while (fscanf(file, "%s %d %c %f", tempPerson.name, &tempPerson.yearOfBirth, &tempPerson.gender, &tempPerson.height) == 4) {
+        (*numPersons)++;
+        *personsArray = (Person *)realloc(*personsArray, (*numPersons) * sizeof(Person));
+        if (*personsArray == NULL) {
+            printf("Ошибка выделения памяти\n");
+            fclose(file);
+            return 0;
+        }
+        (*personsArray)[*numPersons - 1] = tempPerson;
+    }
+
+    fclose(file);
     return 1;
 }
 
-int cmpByYear(const void *x, const void *y) {
-    const Chelovek *a = (const Chelovek *)x;
-    const Chelovek *b = (const Chelovek *)y;
-    return a->birthYear - b->birthYear;
+int compareByYear(const void *a, const void *b) {
+    const Person *p1 = (const Person *)a;
+    const Person *p2 = (const Person *)b;
+    return p1->yearOfBirth - p2->yearOfBirth;
 }
 
-int cmpByName(const void *x, const void *y) {
-    const Chelovek *a = (const Chelovek *)x;
-    const Chelovek *b = (const Chelovek *)y;
-    return strcmp(a->fullName, b->fullName);
+int compareByName(const void *a, const void *b) {
+    const Person *p1 = (const Person *)a;
+    const Person *p2 = (const Person *)b;
+    return strcmp(p1->name, p2->name);
 }
 
-int cmpBySex(const void *x, const void *y) {
-    const Chelovek *a = (const Chelovek *)x;
-    const Chelovek *b = (const Chelovek *)y;
-    return a->sex - b->sex;
+int compareByGender(const void *a, const void *b) {
+    const Person *p1 = (const Person *)a;
+    const Person *p2 = (const Person *)b;
+    return p1->gender - p2->gender;
 }
 
-int cmpByHeight(const void *x, const void *y) {
-    const Chelovek *a = (const Chelovek *)x;
-    const Chelovek *b = (const Chelovek *)y;
-    if (a->stature < b->stature) return -1;
-    if (a->stature > b->stature) return 1;
+int compareByHeight(const void *a, const void *b) {
+    const Person *p1 = (const Person *)a;
+    const Person *p2 = (const Person *)b;
+    if (p1->height < p2->height) return -1;
+    if (p1->height > p2->height) return 1;
     return 0;
 }
 
-int multiFieldCompare(const void *x, const void *y) {
-    const Chelovek *a = (const Chelovek *)x;
-    const Chelovek *b = (const Chelovek *)y;
-    int res = 0;
+int multiFieldComparator(const void *a, const void *b) {
+    const Person *p1 = (const Person *)a;
+    const Person *p2 = (const Person *)b;
+    int result = 0;
 
-    switch (primarySortKey) {
-        case 1: res = cmpByYear(a, b); break;
-        case 2: res = cmpByName(a, b); break;
-        case 3: res = cmpBySex(a, b); break;
-        case 4: res = cmpByHeight(a, b); break;
-        default: res = 0; break;
+    switch (mainSortField) {
+        case 1: result = compareByYear(p1, p2); break;
+        case 2: result = compareByName(p1, p2); break;
+        case 3: result = compareByGender(p1, p2); break;
+        case 4: result = compareByHeight(p1, p2); break;
+        default: result = 0; break;
     }
 
-    if (res == 0 && secondarySortKey != 0) {
-        switch (secondarySortKey) {
-            case 1: res = cmpByYear(a, b); break;
-            case 2: res = cmpByName(a, b); break;
-            case 3: res = cmpBySex(a, b); break;
-            case 4: res = cmpByHeight(a, b); break;
-            default: res = 0; break;
+    if (result == 0 && secondarySortField != 0) {
+        switch (secondarySortField) {
+            case 1: result = compareByYear(p1, p2); break;
+            case 2: result = compareByName(p1, p2); break;
+            case 3: result = compareByGender(p1, p2); break;
+            case 4: result = compareByHeight(p1, p2); break;
+            default: result = 0; break;
         }
     }
 
-    return res;
+    return result;
 }
 
-void displayList(Chelovek *list, int total) {
-    printf("Список отсортированных данных:\n");
-    for (int i = 0; i < total; i++) {
+void printPersonsList(Person *personsArray, int numPersons) {
+    printf("Отсортированный список:\n");
+    for (int i = 0; i < numPersons; i++) {
         printf("ФИО: %s, Год рождения: %d, Пол: %c, Рост(м): %.2f\n",
-               list[i].fullName, list[i].birthYear, list[i].sex, list[i].stature);
+               personsArray[i].name, personsArray[i].yearOfBirth, personsArray[i].gender, personsArray[i].height);
     }
 }
 
 int main() {
-    Chelovek *Cheloveks = NULL;
-    int count = 0;
+    Person *persons = NULL;
+    int totalPersons = 0;
 
-    if (!loadDataFromFile(&Cheloveks, &count)) {
+    if (!loadPersonsFromFile(&persons, &totalPersons)) {
         return 1;
     }
 
-    if (count == 0) {
+    if (totalPersons == 0) {
         printf("Файл пуст или не содержит данных.\n");
         return 0;
     }
@@ -120,7 +121,7 @@ int main() {
     printf("3. Пол\n");
     printf("4. Рост\n");
     printf("Введите номер поля: ");
-    scanf("%d", &primarySortKey);
+    scanf("%d", &mainSortField);
 
     printf("Выберите второстепенное поле для сортировки (0 - нет):\n");
     printf("1. Год рождения\n");
@@ -128,26 +129,26 @@ int main() {
     printf("3. Пол\n");
     printf("4. Рост\n");
     printf("Введите номер поля: ");
-    scanf("%d", &secondarySortKey);
+    scanf("%d", &secondarySortField);
 
-    if (secondarySortKey == 0) {
-        switch (primarySortKey) {
-            case 1: qsort(Cheloveks, count, sizeof(Chelovek), cmpByYear); break;
-            case 2: qsort(Cheloveks, count, sizeof(Chelovek), cmpByName); break;
-            case 3: qsort(Cheloveks, count, sizeof(Chelovek), cmpBySex); break;
-            case 4: qsort(Cheloveks, count, sizeof(Chelovek), cmpByHeight); break;
+    if (secondarySortField == 0) {
+        switch (mainSortField) {
+            case 1: qsort(persons, totalPersons, sizeof(Person), compareByYear); break;
+            case 2: qsort(persons, totalPersons, sizeof(Person), compareByName); break;
+            case 3: qsort(persons, totalPersons, sizeof(Person), compareByGender); break;
+            case 4: qsort(persons, totalPersons, sizeof(Person), compareByHeight); break;
             default:
                 printf("Недопустимый выбор поля.\n");
-                free(Cheloveks);
+                free(persons);
                 return 1;
         }
     } else {
-        qsort(Cheloveks, count, sizeof(Chelovek), multiFieldCompare);
+        qsort(persons, totalPersons, sizeof(Person), multiFieldComparator);
     }
 
     printf("\nРезультат сортировки:\n");
-    displayList(Cheloveks, count);
+    printPersonsList(persons, totalPersons);
 
-    free(Cheloveks);
+    free(persons);
     return 0;
 }
