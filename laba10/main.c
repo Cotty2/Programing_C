@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define FIND_MAX(arr, size, max) \
+    max = arr[0]; \
+    for(int i = 1; i < size; i++) { \
+        if(arr[i] > max) max = arr[i]; \
+    }
+
+int main() {
+    long long numbers[100];
+    int count = 0;
+    char input[1000];
+    
+    printf("Введите числа через пробел: ");
+    fgets(input, sizeof(input), stdin);
+    
+    char* token = strtok(input, " ");
+    while(token != NULL && count < 100) {
+        if(strlen(token) > 18) {
+            printf("Ошибка: Число '%s' слишком длинное\n", token);
+            token = strtok(NULL, " ");
+            continue;
+        }
+        
+        numbers[count++] = strtoll(token, NULL, 10);
+        token = strtok(NULL, " ");
+    }
+    
+    if(count == 0) {
+        printf("Не найдено корректных чисел\n");
+        return 1;
+    }
+    
+    long long max_num;
+    FIND_MAX(numbers, count, max_num);
+    
+    printf("Максимальное число: %lld\n", max_num);
+    
+    return 0;
+}
