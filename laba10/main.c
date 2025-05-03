@@ -26,14 +26,21 @@ int main() {
     }
 
     if (count == 0) {
-        printf("Вы не ввели числа\n");
+        printf("Вы не ввели числа.\n");
         return 1;
     }
 
     long long max_num;
     FIND_MAX(numbers, count, max_num);
 
+    long long sum = 0;
+    for (int i = 0; i < count; i++) {
+        sum += numbers[i];
+    }
+    double average = (double)sum / count;
+
     printf("Максимальное число: %lld\n", max_num);
+    printf("Среднее арифметическое: %.2f\n", average);
 
     return 0;
 }
