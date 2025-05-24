@@ -40,8 +40,8 @@ int main() {
     unsigned char *p = (unsigned char*)&dnum;
     int bits_double = count_bits_bytes(p, sizeof(double));
 
-    printf("Количество установленных битов в long: %d\n", bits_long);
-    printf("Количество установленных битов в double: %d\n", bits_double);
+    printf("Количество  битов в long: %d\n", bits_long);
+    printf("Количество  битов в double: %d\n", bits_double);
 
     return 0;
 }
