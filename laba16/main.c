@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-int count_bits_ulong(unsigned long x) {
+int longbits(unsigned long x) {
     int count = 0;
     while (x) {
         count += x & 1;
@@ -10,7 +10,7 @@ int count_bits_ulong(unsigned long x) {
     return count;
 }
 
-int count_bits_bytes(const unsigned char *bytes, size_t size) {
+int bitsbytes(const unsigned char *bytes, size_t size) {
     int count = 0;
     for (size_t i = 0; i < size; i++) {
         unsigned char b = bytes[i];
@@ -36,12 +36,12 @@ int main() {
         printf("Ошибка ввода double\n");
         return 1;
     }
-    int bits_long = count_bits_ulong((unsigned long)lnum);
+    int bits_long = longbits((unsigned long)lnum);
     unsigned char *p = (unsigned char*)&dnum;
-    int bits_double = count_bits_bytes(p, sizeof(double));
+    int bits_double = bitsbytes(p, sizeof(double));
 
-    printf("Количество  битов в long: %d\n", bits_long);
-    printf("Количество  битов в double: %d\n", bits_double);
+    printf("битов в long: %d\n", bits_long);
+    printf("битов в double: %d\n", bits_double);
 
     return 0;
 }
